@@ -18,7 +18,7 @@
 :CyberSecurityMetrics a samm:Aspect ;
    samm:preferredName "Cyber Security Metrics"@en ;
    samm:description "A cyber security metrics report containing security KPIs for a Catena-X business partner. This aspect model defines the structure for exchanging cyber security performance indicators according to the CyberSecurityMetrics-CSMAPI-Push:1.0.0 specification. The model includes 25 standardized KPIs covering network security, application security, cloud security, data protection, access control, incident response, asset management, vulnerability management, monitoring, and physical security based on TISAX requirements."@en ;
-_   samm:properties ( :header :content ) ;
+   samm:properties ( :header :content ) ;
    samm:operations ( ) ;
    samm:events ( ) .
 
@@ -551,7 +551,7 @@ _   samm:properties ( :header :content ) ;
    :kpiExpectedUnit "percent" ;
    :tisaxDomain "Cryptography" .
 
-:KpiCy1_11 a :KpiDefinition ;
+:KpiCy1v11 a :KpiDefinition ;
    samm:preferredName "Cryptographic Algorithms and Key Management"@en ;
    samm:description "Use symmetric encryption keys with a minimum length of 256 bits. Implement secure key management practices. This KPI measures the percentage of systems using approved cryptographic algorithms and secure key management practices."@en ;
    :kpiIdValue "CY1.11" ;
