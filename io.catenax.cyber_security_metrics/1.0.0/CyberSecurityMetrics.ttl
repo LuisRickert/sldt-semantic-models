@@ -1,3 +1,5 @@
+
+
 @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.1.0#> .
 @prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#> .
 @prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.1.0#> .
@@ -7,13 +9,6 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix : <urn:samm:io.catenax.cyber_security_metrics:1.0.0#> .
 @prefix ext-number: <urn:samm:io.catenax.shared.business_partner_number:2.0.0#> .
-
-# ============================================================================
-# 1. ASPECT DEFINITION (ROOT)
-# ============================================================================
-# The top-level aspect that defines the entire cyber security metrics model.
-# This is the entry point for the semantic model.
-# ============================================================================
 
 :CyberSecurityMetrics a samm:Aspect ;
    samm:preferredName "Cyber Security Metrics"@en ;
@@ -32,37 +27,25 @@
    samm:description "Content section containing the actual cyber security metrics data including report identification and KPI values."@en ;
    samm:characteristic :ContentCharacteristic .
 
-# ============================================================================
-# 2. HEADER SECTION
-# ============================================================================
-# Contains all definitions related to the message header:
-# - HeaderCharacteristic and HeaderEntity
-# - All header properties with their characteristics
-# - All header-specific constraints
-# ============================================================================
-
-# --- 2.1 Header Structure ---
-
 :HeaderCharacteristic a samm-c:SingleEntity ;
    samm:preferredName "Header Characteristic"@en ;
    samm:description "Describes the characteristics of the message header including all required and optional fields for message routing."@en ;
    samm:dataType :HeaderEntity .
 
+:ContentCharacteristic a samm-c:SingleEntity ;
+   samm:preferredName "Content Characteristic"@en ;
+   samm:description "Describes the characteristics of the message content including report metadata and cyber security metrics."@en ;
+   samm:dataType :ContentEntity .
+
 :HeaderEntity a samm:Entity ;
    samm:preferredName "Header Entity"@en ;
    samm:description "Entity representing the complete message header with all routing and metadata information."@en ;
-   samm:properties ( 
-      :senderBpn 
-      :senderFeedbackUrl 
-      :context 
-      :messageId 
-      :receiverBpn 
-      :sentDateTime 
-      :version 
-      [ samm:property :relatedMessageId; samm:optional true ] 
-   ) .
+   samm:properties ( :senderBpn :senderFeedbackUrl :context :messageId :receiverBpn :sentDateTime :version [ samm:property :relatedMessageId; samm:optional true ] ) .
 
-# --- 2.2 Header Properties ---
+:ContentEntity a samm:Entity ;
+   samm:preferredName "Content Entity"@en ;
+   samm:description "Entity representing the complete message content including report identification, optional site/supplier information, and the cyber security metrics data."@en ;
+   samm:properties ( :reportId :cyberSecurityMetrics [ samm:property :enclosedSiteBpn; samm:optional true ] [ samm:property :supplierNumberList; samm:optional true ] ) .
 
 :senderBpn a samm:Property ;
    samm:preferredName "Sender BPN"@en ;
@@ -74,7 +57,7 @@
    samm:preferredName "Sender Feedback URL"@en ;
    samm:description "HTTPS endpoint URL where the sender can receive feedback notifications about the processing status of this message. Must be a valid URI."@en ;
    samm:characteristic :UrlCharacteristic ;
-   samm:exampleValue "https://domain.tld/path/to/api" .
+   samm:exampleValue "https://domain.tld/path/to/api"^^xsd:anyURI .
 
 :context a samm:Property ;
    samm:preferredName "Context"@en ;
@@ -112,7 +95,26 @@
    samm:characteristic :UuidCharacteristic ;
    samm:exampleValue "3b4edc05-e214-47a1-b0c2-1d831cdd9ba9" .
 
-# --- 2.3 Header Characteristics & Constraints ---
+:reportId a samm:Property ;
+   samm:preferredName "Report ID"@en ;
+   samm:description "Unique report identifier following the format CSM-{YYYY}-{MM}-{SenderBPN}-{SequenceNumber}. Example: CSM-2025-11-BPNL0000000001AB-001. The year and month indicate the reporting period, and the sequence number (001-999) allows for multiple reports per month."@en ;
+   samm:characteristic :ReportIdCharacteristic ;
+   samm:exampleValue "CSM-2025-11-BPNL0000000001AB-001" .
+
+:cyberSecurityMetrics a samm:Property ;
+   samm:preferredName "Cyber Security Metrics"@en ;
+   samm:description "Container object holding the complete set of cyber security Key Performance Indicators (KPIs). Must contain exactly 25 KPIs, one for each defined metric from CY1.1 to CY1.25. Each KPI provides standardized security measurements across different domains including network security, application security, cloud security, data protection, access control, incident response, asset management, vulnerability management, monitoring, and physical security."@en ;
+   samm:characteristic :CyberSecurityMetricsCharacteristic .
+
+:enclosedSiteBpn a samm:Property ;
+   samm:preferredName "Enclosed Site BPN"@en ;
+   samm:description "Optional list of Business Partner Number Addresses (BPNA) representing specific sites or locations covered by this cyber security metrics report. Each BPNA must follow the format: BPNA followed by 12 alphanumeric characters. If the report covers the entire organization, this field can be omitted."@en ;
+   samm:characteristic :EnclosedSiteBpnList .
+
+:supplierNumberList a samm:Property ;
+   samm:preferredName "Supplier Number"@en ;
+   samm:description "Optional list of 8-digit supplier identification numbers. Used when the cyber security metrics report needs to reference specific supplier relationships. Each number must be exactly 8 digits. If not applicable, this field can be omitted."@en ;
+   samm:characteristic :SupplierNumberListCharacteristic .
 
 :UrlCharacteristic a samm:Characteristic ;
    samm:preferredName "URL Characteristic"@en ;
@@ -130,63 +132,10 @@
    samm-c:baseCharacteristic samm-c:Text ;
    samm-c:constraint :UuidConstraint .
 
-:UuidConstraint a samm-c:RegularExpressionConstraint ;
-   samm:preferredName "UUID Constraint"@en ;
-   samm:description "Regular expression constraint ensuring UUID v4 format: 8-4-4-4-12 hexadecimal digits with version indicator '4' in the third group and variant bits '8', '9', 'a', or 'b' in the fourth group."@en ;
-   samm:value "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$" .
-
 :VersionCharacteristic a samm:Characteristic ;
    samm:preferredName "Version Characteristic"@en ;
    samm:description "Characteristic for semantic version format. Currently fixed to '1.0.0' following semantic versioning (major.minor.patch)."@en ;
    samm:dataType xsd:string .
-
-# ============================================================================
-# 3. CONTENT SECTION
-# ============================================================================
-# Contains all definitions related to the message content:
-# - ContentCharacteristic and ContentEntity
-# - Report metadata properties (reportId, enclosedSiteBpn, supplierNumber)
-# - Content-specific characteristics and constraints
-# ============================================================================
-
-# --- 3.1 Content Structure ---
-
-:ContentCharacteristic a samm-c:SingleEntity ;
-   samm:preferredName "Content Characteristic"@en ;
-   samm:description "Describes the characteristics of the message content including report metadata and cyber security metrics."@en ;
-   samm:dataType :ContentEntity .
-
-:ContentEntity a samm:Entity ;
-   samm:preferredName "Content Entity"@en ;
-   samm:description "Entity representing the complete message content including report identification, optional site/supplier information, and the cyber security metrics data."@en ;
-   samm:properties ( 
-      :reportId 
-      :cyberSecurityMetrics 
-      [ samm:property :enclosedSiteBpn; samm:optional true ] 
-      [ samm:property :supplierNumber; samm:optional true ] 
-   ) .
-
-# --- 3.2 Content Metadata Properties ---
-
-:reportId a samm:Property ;
-   samm:preferredName "Report ID"@en ;
-   samm:description "Unique report identifier following the format CSM-{YYYY}-{MM}-{SenderBPN}-{SequenceNumber}. Example: CSM-2025-11-BPNL0000000001AB-001. The year and month indicate the reporting period, and the sequence number (001-999) allows for multiple reports per month."@en ;
-   samm:characteristic :ReportIdCharacteristic ;
-   samm:exampleValue "CSM-2025-11-BPNL0000000001AB-001" .
-
-:enclosedSiteBpn a samm:Property ;
-   samm:preferredName "Enclosed Site BPN"@en ;
-   samm:description "Optional list of Business Partner Number Addresses (BPNA) representing specific sites or locations covered by this cyber security metrics report. Each BPNA must follow the format: BPNA followed by 12 alphanumeric characters. If the report covers the entire organization, this field can be omitted."@en ;
-   samm:characteristic ext-number:BpnsTrait ;
-   samm:exampleValue "BPNA00000003AYRE" .
-
-:supplierNumber a samm:Property ;
-   samm:preferredName "Supplier Number"@en ;
-   samm:description "Optional list of 8-digit supplier identification numbers. Used when the cyber security metrics report needs to reference specific supplier relationships. Each number must be exactly 8 digits. If not applicable, this field can be omitted."@en ;
-   samm:characteristic :SupplierNumberCharacteristic ;
-   samm:exampleValue "12345678" .
-
-# --- 3.3 Content Metadata Characteristics & Constraints ---
 
 :ReportIdCharacteristic a samm-c:Trait ;
    samm:preferredName "Report ID Characteristic"@en ;
@@ -194,31 +143,56 @@
    samm-c:baseCharacteristic samm-c:Text ;
    samm-c:constraint :ReportIdConstraint .
 
+:CyberSecurityMetricsCharacteristic a samm-c:SingleEntity ;
+   samm:preferredName "Cyber Security Metrics Characteristic"@en ;
+   samm:description "Container characteristic for the KPI list ensuring the correct structure and cardinality."@en ;
+   samm:dataType :CyberSecurityMetricsEntity .
+
+:EnclosedSiteBpnList a samm-c:List ;
+   samm:dataType :EnclosedSiteEntity .
+
+:SupplierNumberListCharacteristic a samm-c:List ;
+   samm:preferredName "Supplier Number List"@en ;
+   samm:description "List characteristic for supplier identification numbers. Each entry must be exactly 8 digits."@en ;
+   samm:dataType :SupplierNumberEntity .
+
+:UuidConstraint a samm-c:RegularExpressionConstraint ;
+   samm:preferredName "UUID Constraint"@en ;
+   samm:description "Regular expression constraint ensuring UUID v4 format: 8-4-4-4-12 hexadecimal digits with version indicator '4' in the third group and variant bits '8', '9', 'a', or 'b' in the fourth group."@en ;
+   samm:value "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$" .
+
 :ReportIdConstraint a samm-c:RegularExpressionConstraint ;
    samm:preferredName "Report ID Constraint"@en ;
    samm:description "Regular expression ensuring report ID format: 'CSM-' prefix, 4-digit year, 2-digit month (01-12), sender BPNL (BPNL + 12 alphanumeric), and 3-digit sequence number (001-999)."@en ;
    samm:value "^CSM-[0-9]{4}-(0[1-9]|1[0-2])-BPNL[0-9A-Z]{12}-[0-9]{3}$" .
 
-:EnclosedSiteBpnCharacteristic a samm-c:List ;
-   samm:preferredName "Enclosed Site BPN List"@en ;
-   samm:description "List characteristic for Business Partner Number Address (BPNA) identifiers. Each entry must follow the BPNA format."@en ;
-   samm:dataType :BpnaType .
+:CyberSecurityMetricsEntity a samm:Entity ;
+   samm:preferredName "Cyber Security Metrics Entity"@en ;
+   samm:description "Entity containing the list of cyber security KPIs. Must contain exactly 25 KPI entries, covering all metrics from CY1.1 to CY1.25."@en ;
+   samm:properties ( :kpis ) .
 
-:BpnaType a samm-c:Trait ;
-   samm:preferredName "BPNA Type"@en ;
-   samm:description "Trait for Business Partner Number Address format validation."@en ;
-   samm-c:baseCharacteristic samm-c:Text ;
-   samm-c:constraint :BpnaConstraint .
+:EnclosedSiteEntity a samm:Entity ;
+   samm:properties ( :enclosedSite ) .
 
-:BpnaConstraint a samm-c:RegularExpressionConstraint ;
-   samm:preferredName "BPNA Constraint"@en ;
-   samm:description "Regular expression ensuring BPNA format: 'BPNA' prefix followed by exactly 12 alphanumeric characters (uppercase letters and digits)."@en ;
-   samm:value "^BPNA[0-9A-Z]{12}$" .
+:SupplierNumberEntity a samm:Entity ;
+   samm:properties ( :supplier ) .
 
-:SupplierNumberCharacteristic a samm-c:List ;
-   samm:preferredName "Supplier Number List"@en ;
-   samm:description "List characteristic for supplier identification numbers. Each entry must be exactly 8 digits."@en ;
-   samm:dataType :SupplierNumberType .
+:kpis a samm:Property ;
+   samm:preferredName "KPIs"@en ;
+   samm:description "List of cyber security Key Performance Indicators. Must contain exactly 25 entries, with each KPI ID (CY1.1 through CY1.25) appearing exactly once. The order of KPIs in the list is not prescribed. Each KPI includes identification (ID, readable ID, description), measurement data (value, unit, date), and sharing information (shared flag, not-shared reason)."@en ;
+   samm:characteristic :KpisCharacteristic .
+
+:enclosedSite a samm:Property ;
+   samm:characteristic ext-number:BpnsTrait .
+
+:supplier a samm:Property ;
+   samm:characteristic :SupplierNumberType ;
+   samm:exampleValue "01234567" .
+
+:KpisCharacteristic a samm-c:List ;
+   samm:preferredName "KPIs List Characteristic"@en ;
+   samm:description "List characteristic enforcing exactly 25 KPI entries with unique KPI IDs from CY1.1 to CY1.25."@en ;
+   samm:dataType :KpiEntity .
 
 :SupplierNumberType a samm-c:Trait ;
    samm:preferredName "Supplier Number Type"@en ;
@@ -226,78 +200,15 @@
    samm-c:baseCharacteristic samm-c:Text ;
    samm-c:constraint :SupplierNumberConstraint .
 
+:KpiEntity a samm:Entity ;
+   samm:preferredName "KPI Entity"@en ;
+   samm:description "Entity representing a single cyber security Key Performance Indicator with all its attributes including identification, measurement value, unit, date, and sharing status. Each KPI must conform to the framework version 1.0.0 and include all mandatory fields."@en ;
+   samm:properties ( :kpiFrameworkVersion :kpiId :kpiReadableId :kpiDescription :kpiUnit :kpiValue :kpiDate :kpiShared :kpiNotSharedReason ) .
+
 :SupplierNumberConstraint a samm-c:RegularExpressionConstraint ;
    samm:preferredName "Supplier Number Constraint"@en ;
    samm:description "Regular expression ensuring exactly 8 numeric digits for supplier identification."@en ;
    samm:value "^[0-9]{8}$" .
-
-# ============================================================================
-# 4. CYBER SECURITY METRICS SECTION
-# ============================================================================
-# Contains the KPI structure:
-# - CyberSecurityMetrics container
-# - KPI list structure
-# - Individual KPI entity definition
-# This section is the core business logic of the aspect model.
-# ============================================================================
-
-# --- 4.1 Metrics Container ---
-
-:cyberSecurityMetrics a samm:Property ;
-   samm:preferredName "Cyber Security Metrics"@en ;
-   samm:description "Container object holding the complete set of cyber security Key Performance Indicators (KPIs). Must contain exactly 25 KPIs, one for each defined metric from CY1.1 to CY1.25. Each KPI provides standardized security measurements across different domains including network security, application security, cloud security, data protection, access control, incident response, asset management, vulnerability management, monitoring, and physical security."@en ;
-   samm:characteristic :CyberSecurityMetricsCharacteristic .
-
-:CyberSecurityMetricsCharacteristic a samm-c:SingleEntity ;
-   samm:preferredName "Cyber Security Metrics Characteristic"@en ;
-   samm:description "Container characteristic for the KPI list ensuring the correct structure and cardinality."@en ;
-   samm:dataType :CyberSecurityMetricsEntity .
-
-:CyberSecurityMetricsEntity a samm:Entity ;
-   samm:preferredName "Cyber Security Metrics Entity"@en ;
-   samm:description "Entity containing the list of cyber security KPIs. Must contain exactly 25 KPI entries, covering all metrics from CY1.1 to CY1.25."@en ;
-   samm:properties ( :kpis ) .
-
-# --- 4.2 KPI List ---
-
-:kpis a samm:Property ;
-   samm:preferredName "KPIs"@en ;
-   samm:description "List of cyber security Key Performance Indicators. Must contain exactly 25 entries, with each KPI ID (CY1.1 through CY1.25) appearing exactly once. The order of KPIs in the list is not prescribed. Each KPI includes identification (ID, readable ID, description), measurement data (value, unit, date), and sharing information (shared flag, not-shared reason)."@en ;
-   samm:characteristic :KpisCharacteristic .
-
-:KpisCharacteristic a samm-c:List ;
-   samm:preferredName "KPIs List Characteristic"@en ;
-   samm:description "List characteristic enforcing exactly 25 KPI entries with unique KPI IDs from CY1.1 to CY1.25."@en ;
-   samm:dataType :KpiEntity .
-
-# --- 4.3 KPI Entity Definition ---
-
-:KpiEntity a samm:Entity ;
-   samm:preferredName "KPI Entity"@en ;
-   samm:description "Entity representing a single cyber security Key Performance Indicator with all its attributes including identification, measurement value, unit, date, and sharing status. Each KPI must conform to the framework version 1.0.0 and include all mandatory fields."@en ;
-   samm:properties ( 
-      :kpiFrameworkVersion 
-      :kpiId 
-      :kpiReadableId 
-      :kpiDescription 
-      :kpiUnit 
-      :kpiValue 
-      :kpiDate 
-      :kpiShared 
-      :kpiNotSharedReason 
-   ) .
-
-# ============================================================================
-# 5. KPI PROPERTIES
-# ============================================================================
-# All properties that belong to a single KPI entity.
-# Organized by logical grouping:
-# - Identification (version, id, readableId, description)
-# - Measurement (unit, value, date)
-# - Sharing (shared, notSharedReason)
-# ============================================================================
-
-# --- 5.1 KPI Identification Properties ---
 
 :kpiFrameworkVersion a samm:Property ;
    samm:preferredName "KPI Framework Version"@en ;
@@ -323,8 +234,6 @@
    samm:characteristic samm-c:Text ;
    samm:exampleValue "Percentage of network segments compliant with defined security postures and access requirements: [%]" .
 
-# --- 5.2 KPI Measurement Properties ---
-
 :kpiUnit a samm:Property ;
    samm:preferredName "KPI Unit"@en ;
    samm:description "Unit of measurement for the KPI value. Must be one of: 'percent' (for percentage values 0-100), 'number' (for count/integer values), or 'days' (for time duration values). The unit determines how the kpiValue should be interpreted and displayed."@en ;
@@ -343,28 +252,16 @@
    samm:characteristic :KpiDateCharacteristic ;
    samm:exampleValue "2025-11-15" .
 
-# --- 5.3 KPI Sharing Properties ---
-
 :kpiShared a samm:Property ;
    samm:preferredName "KPI Shared"@en ;
    samm:description "Boolean flag indicating whether the KPI value is shared with the receiver (true) or withheld (false). If false, the kpiNotSharedReason field must contain an explanation (minimum 1 character). If true, kpiNotSharedReason must be an empty string. This mechanism allows organizations to selectively share metrics while maintaining transparency about data sharing decisions."@en ;
    samm:characteristic samm-c:Boolean ;
-   samm:exampleValue "true"^^xsd:boolean .
+   samm:exampleValue true .
 
 :kpiNotSharedReason a samm:Property ;
    samm:preferredName "KPI Not Shared Reason"@en ;
    samm:description "Explanation for why a KPI value is not shared. REQUIRED and must contain text (minimum 1 character) when kpiShared is false. MUST be empty string when kpiShared is true. This conditional requirement ensures transparency about data sharing decisions. Common reasons include: confidentiality concerns, ongoing security incidents, incomplete data, or contractual restrictions."@en ;
-   samm:characteristic samm-c:Text ;
-   samm:exampleValue "" .
-
-# ============================================================================
-# 6. KPI CHARACTERISTICS & CONSTRAINTS
-# ============================================================================
-# All characteristics and constraints specific to KPI properties.
-# Organized by property type for easy maintenance.
-# ============================================================================
-
-# --- 6.1 KPI Identification Characteristics ---
+   samm:characteristic samm-c:Text .
 
 :KpiFrameworkVersionCharacteristic a samm:Characteristic ;
    samm:preferredName "KPI Framework Version Characteristic"@en ;
@@ -383,13 +280,6 @@
    samm-c:baseCharacteristic samm-c:Text ;
    samm-c:constraint :KpiReadableIdConstraint .
 
-:KpiReadableIdConstraint a samm-c:RegularExpressionConstraint ;
-   samm:preferredName "KPI Readable ID Constraint"@en ;
-   samm:description "Regular expression ensuring readable ID format: lowercase letters, digits, and underscores only. Example: 'netw_segm_comp'."@en ;
-   samm:value "^[a-z0-9_]+$" .
-
-# --- 6.2 KPI Measurement Characteristics ---
-
 :KpiUnitCharacteristic a samm-c:Enumeration ;
    samm:preferredName "KPI Unit Enumeration"@en ;
    samm:description "Enumeration of valid measurement units for KPIs: 'percent' for percentage values (0-100), 'number' for count/integer values, 'days' for time duration values."@en ;
@@ -402,6 +292,17 @@
    samm-c:baseCharacteristic :KpiValueBase ;
    samm-c:constraint :KpiValueConstraint .
 
+:KpiDateCharacteristic a samm-c:Trait ;
+   samm:preferredName "KPI Date Characteristic"@en ;
+   samm:description "Characteristic for KPI measurement dates in YYYY-MM-DD format (ISO 8601 date format without time)."@en ;
+   samm-c:baseCharacteristic samm-c:Text ;
+   samm-c:constraint :KpiDateConstraint .
+
+:KpiReadableIdConstraint a samm-c:RegularExpressionConstraint ;
+   samm:preferredName "KPI Readable ID Constraint"@en ;
+   samm:description "Regular expression ensuring readable ID format: lowercase letters, digits, and underscores only. Example: 'netw_segm_comp'."@en ;
+   samm:value "^[a-z0-9_]+$" .
+
 :KpiValueBase a samm:Characteristic ;
    samm:preferredName "KPI Value Base"@en ;
    samm:description "Base characteristic for KPI values as decimal numbers."@en ;
@@ -413,249 +314,160 @@
    samm-c:minValue "0"^^xsd:decimal ;
    samm-c:lowerBoundDefinition samm-c:AT_LEAST .
 
-:KpiDateCharacteristic a samm-c:Trait ;
-   samm:preferredName "KPI Date Characteristic"@en ;
-   samm:description "Characteristic for KPI measurement dates in YYYY-MM-DD format (ISO 8601 date format without time)."@en ;
-   samm-c:baseCharacteristic samm-c:Text ;
-   samm-c:constraint :KpiDateConstraint .
-
 :KpiDateConstraint a samm-c:RegularExpressionConstraint ;
    samm:preferredName "KPI Date Constraint"@en ;
    samm:description "Regular expression ensuring date format YYYY-MM-DD: 4-digit year, 2-digit month (01-12), 2-digit day (01-31). Note: Does not validate actual calendar validity (e.g., February 30)."@en ;
    samm:value "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$" .
 
-# ============================================================================
-# 7. KPI REGISTRY
-# ============================================================================
-# Defines all 25 cyber security KPIs based on TISAX requirements.
-# Each KPI includes:
-# - Official ID (CY1.x) and readable identifier
-# - TISAX domain classification
-# - Comprehensive description combining requirement and measurement context
-# - Expected unit of measurement
-#
-# The KPIs are organized by TISAX security domains:
-# - Operations Security (11 KPIs)
-# - Cryptography (3 KPIs)
-# - Identity and Access Management (3 KPIs)
-# - IT Security / Cyber Security (3 KPIs)
-# - System Acquisitions & Development (1 KPI)
-# - Supplier Relationships (1 KPI)
-# - Incident Response (1 KPI)
-# - Organization of Information Security (1 KPI)
-# - Physical Security (1 KPI)
-#
-# Source: BMW Group EDI Implementation Guideline v1.1 (26.08.2025)
-# ============================================================================
-
-# --- 7.1 Operations Security KPIs ---
-
-:KpiCy1v1 a :KpiDefinition ;
-   :kpiIdValue "CY1.1" ;
-   :kpiReadableIdValue "netw_segm_comp" ;
-   :kpiDescriptionValue "Percentage of network segments compliant with defined security postures and access requirements: [%]" ;
+:KpiCy1v7 a :KpiDefinition ;
+   :kpiDescriptionValue "Percentage of cloud environments with BMW tenant separation: [%]" ;
    :kpiExpectedUnit "percent" ;
+   :kpiIdValue "CY1.7" ;
+   :kpiReadableIdValue "clou_tena_sepa" ;
+   :tisaxDomain "IT Security / Cyber Security" .
+
+:KpiCy1v25 a :KpiDefinition ;
+   :kpiDescriptionValue "Number of days until all critical services in the OT environment are fully patched against known critical vulnerabilities: [n]" ;
+   :kpiExpectedUnit "days" ;
+   :kpiIdValue "CY1.25" ;
+   :kpiReadableIdValue "ot_patc_days" ;
+   :tisaxDomain "TODO: Add TISAX domain" .
+
+:KpiCy1v24 a :KpiDefinition ;
+   :kpiDescriptionValue "Number of days until all critical services in the IT environment are fully patched against known critical vulnerabilities: [n]" ;
+   :kpiExpectedUnit "days" ;
+   :kpiIdValue "CY1.24" ;
+   :kpiReadableIdValue "it_patc_days" ;
+   :tisaxDomain "TODO: Add TISAX domain" .
+
+:KpiCy1v12 a :KpiDefinition ;
+   :kpiDescriptionValue "Frequency of incident response plan testing and staff training: [n times/year]" ;
+   :kpiExpectedUnit "number" ;
+   :kpiIdValue "CY1.12" ;
+   :kpiReadableIdValue "inci_resp_trai" ;
+   :tisaxDomain "Incident Response" .
+
+:KpiCy1v6 a :KpiDefinition ;
+   :kpiDescriptionValue "Percentage of suppliers compliant with security requirements: [%]" ;
+   :kpiExpectedUnit "percent" ;
+   :kpiIdValue "CY1.6" ;
+   :kpiReadableIdValue "supp_secu_comp" ;
+   :tisaxDomain "Supplier Relationships" .
+
+:KpiCy1v14 a :KpiDefinition ;
+   :kpiDescriptionValue "Percentage of critical business processes with tested recovery procedures: [%]" ;
+   :kpiExpectedUnit "percent" ;
+   :kpiIdValue "CY1.14" ;
+   :kpiReadableIdValue "busi_reco_test" ;
    :tisaxDomain "Operations Security" .
 
-:KpiCy1v2 a :KpiDefinition ;
-   :kpiIdValue "CY1.2" ;
-   :kpiReadableIdValue "cryp_tran_mech" ;
-   :kpiDescriptionValue "Percentage of information transmissions using approved cryptographic mechanisms: [%]" ;
+:KpiCy1v13 a :KpiDefinition ;
+   :kpiDescriptionValue "Percentage of IT assets included in the inventory: [%]" ;
    :kpiExpectedUnit "percent" ;
-   :tisaxDomain "Cryptography" .
+   :kpiIdValue "CY1.13" ;
+   :kpiReadableIdValue "asse_inve_cove" ;
+   :tisaxDomain "Organization of Information Security" .
 
-:KpiCy1v3 a :KpiDefinition ;
-   :kpiIdValue "CY1.3" ;
-   :kpiReadableIdValue "netw_segm_ids" ;
-   :kpiDescriptionValue "Number of network segments monitored by IDS/IPS : [%]" ;
+:EnclosedSiteBpnCharacteristic a samm-c:List ;
+   samm:preferredName "Enclosed Site BPN List"@en ;
+   samm:description "List characteristic for Business Partner Number Address (BPNA) identifiers. Each entry must follow the BPNA format."@en ;
+   samm:dataType :BpnaType .
+
+:KpiCy1v15 a :KpiDefinition ;
+   :kpiDescriptionValue "Percentage of systems compliant with patch management, malware protection, and vulnerability remediation requirements: [%]" ;
    :kpiExpectedUnit "percent" ;
+   :kpiIdValue "CY1.15" ;
+   :kpiReadableIdValue "patc_malw_vuln" ;
+   :tisaxDomain "Operations Security" .
+
+:KpiCy1v5 a :KpiDefinition ;
+   :kpiDescriptionValue "Percentage of applications compliant with secure coding and testing : [%]" ;
+   :kpiExpectedUnit "percent" ;
+   :kpiIdValue "CY1.5" ;
+   :kpiReadableIdValue "appl_code_test" ;
+   :tisaxDomain "System acquisitions, requirement management and development" .
+
+:KpiCy1v16 a :KpiDefinition ;
+   :kpiDescriptionValue "Percentage of highly confidential data access events logged: [%]" ;
+   :kpiExpectedUnit "percent" ;
+   :kpiIdValue "CY1.16" ;
+   :kpiReadableIdValue "data_acce_logg" ;
    :tisaxDomain "Operations Security" .
 
 :KpiCy1v4 a :KpiDefinition ;
-   :kpiIdValue "CY1.4" ;
-   :kpiReadableIdValue "netw_zone_revi" ;
    :kpiDescriptionValue "Frequency of network zoning architecture reviews: [n times/year]" ;
    :kpiExpectedUnit "number" ;
+   :kpiIdValue "CY1.4" ;
+   :kpiReadableIdValue "netw_zone_revi" ;
    :tisaxDomain "Operations Security" .
 
-:KpiCy1v15 a :KpiDefinition ;
-   :kpiIdValue "CY1.15" ;
-   :kpiReadableIdValue "patc_malw_vuln" ;
-   :kpiDescriptionValue "Percentage of systems compliant with patch management, malware protection, and vulnerability remediation requirements: [%]" ;
+:BpnaConstraint a samm-c:RegularExpressionConstraint ;
+   samm:preferredName "BPNA Constraint"@en ;
+   samm:description "Regular expression ensuring BPNA format: 'BPNA' prefix followed by exactly 12 alphanumeric characters (uppercase letters and digits)."@en ;
+   samm:value "^BPNA[0-9A-Z]{12}$" .
+
+:KpiCy1v3 a :KpiDefinition ;
+   :kpiDescriptionValue "Number of network segments monitored by IDS/IPS : [%]" ;
    :kpiExpectedUnit "percent" ;
+   :kpiIdValue "CY1.3" ;
+   :kpiReadableIdValue "netw_segm_ids" ;
    :tisaxDomain "Operations Security" .
-
-:KpiCy1v16 a :KpiDefinition ;
-   :kpiIdValue "CY1.16" ;
-   :kpiReadableIdValue "data_acce_logg" ;
-   :kpiDescriptionValue "Percentage of highly confidential data access events logged: [%]" ;
-   :kpiExpectedUnit "percent" ;
-   :tisaxDomain "Operations Security" .
-
-:KpiCy1v19 a :KpiDefinition ;
-   :kpiIdValue "CY1.19" ;
-   :kpiReadableIdValue "logg_enab_revi" ;
-   :kpiDescriptionValue "Percentage of critical systems with logging enabled and logs regularly reviewed: [%]" ;
-   :kpiExpectedUnit "percent" ;
-   :tisaxDomain "Operations Security" .
-
-:KpiCy1v22 a :KpiDefinition ;
-   :kpiIdValue "CY1.22" ;
-   :kpiReadableIdValue "back_auto_reco" ;
-   :kpiDescriptionValue "Percentage of critical systems with reliable, automated backups and tested recovery procedures: [%]" ;
-   :kpiExpectedUnit "percent" ;
-   :tisaxDomain "Operations Security" .
-
-:KpiCy1v23 a :KpiDefinition ;
-   :kpiIdValue "CY1.23" ;
-   :kpiReadableIdValue "conf_leas_inve" ;
-   :kpiDescriptionValue "Percentage of systems compliant with recommended configurations, least functionality, and included in component inventory: [%]" ;
-   :kpiExpectedUnit "percent" ;
-   :tisaxDomain "Operations Security" .
-
-:KpiCy1v14 a :KpiDefinition ;
-   :kpiIdValue "CY1.14" ;
-   :kpiReadableIdValue "busi_reco_test" ;
-   :kpiDescriptionValue "Percentage of critical business processes with tested recovery procedures: [%]" ;
-   :kpiExpectedUnit "percent" ;
-   :tisaxDomain "Operations Security" .
-
-# --- 7.2 Cryptography KPIs ---
-
-:KpiCy1v9 a :KpiDefinition ;
-   :kpiIdValue "CY1.9" ;
-   :kpiReadableIdValue "data_encr_rest" ;
-   :kpiDescriptionValue "Percentage of strictly confidential or higher data encrypted at rest: [%]" ;
-   :kpiExpectedUnit "percent" ;
-   :tisaxDomain "Cryptography" .
-
-:KpiCy1v11 a :KpiDefinition ;
-   :kpiIdValue "CY1.11" ;
-   :kpiReadableIdValue "cryp_algo_key" ;
-   :kpiDescriptionValue "Percentage of systems using approved cryptographic algorithms and key management practices: [%]" ;
-   :kpiExpectedUnit "percent" ;
-   :tisaxDomain "Cryptography" .
-
-# --- 7.3 Identity and Access Management KPIs ---
-
-:KpiCy1v10 a :KpiDefinition ;
-   :kpiIdValue "CY1.10" ;
-   :kpiReadableIdValue "remo_vpn_mfa" ;
-   :kpiDescriptionValue "Percentage of remote access connections from untrusted networks using MFA and VPN: [%]" ;
-   :kpiExpectedUnit "percent" ;
-   :tisaxDomain "Identity and Access Management" .
-
-:KpiCy1v18 a :KpiDefinition ;
-   :kpiIdValue "CY1.18" ;
-   :kpiReadableIdValue "acce_rbac_comp" ;
-   :kpiDescriptionValue "Percentage of user accounts and access rights compliant with RBAC policies: [%]" ;
-   :kpiExpectedUnit "percent" ;
-   :tisaxDomain "Identity and Access Management" .
-
-:KpiCy1v20 a :KpiDefinition ;
-   :kpiIdValue "CY1.20" ;
-   :kpiReadableIdValue "user_auth_acco" ;
-   :kpiDescriptionValue "Percentage of user accounts compliant with identification, authentication, authorization, and account management requirements: [%]" ;
-   :kpiExpectedUnit "percent" ;
-   :tisaxDomain "Identity and Access Management" .
-
-# --- 7.4 IT Security / Cyber Security KPIs ---
-
-:KpiCy1v7 a :KpiDefinition ;
-   :kpiIdValue "CY1.7" ;
-   :kpiReadableIdValue "clou_tena_sepa" ;
-   :kpiDescriptionValue "Percentage of cloud environments with BMW tenant separation: [%]" ;
-   :kpiExpectedUnit "percent" ;
-   :tisaxDomain "IT Security / Cyber Security" .
-
-:KpiCy1v8 a :KpiDefinition ;
-   :kpiIdValue "CY1.8" ;
-   :kpiReadableIdValue "clou_audi_freq" ;
-   :kpiDescriptionValue "Frequency of cloud security audits: [n times/year]" ;
-   :kpiExpectedUnit "number" ;
-   :tisaxDomain "IT Security / Cyber Security" .
-
-:KpiCy1v21 a :KpiDefinition ;
-   :kpiIdValue "CY1.21" ;
-   :kpiReadableIdValue "wirl_port_sess" ;
-   :kpiDescriptionValue "Percentage of systems compliant with wireless, portable device, session lock, and remote session termination requirements: [%]" ;
-   :kpiExpectedUnit "percent" ;
-   :tisaxDomain "IT Security / Cyber Security" .
-
-# --- 7.5 System Acquisitions, Requirement Management and Development KPIs ---
-
-:KpiCy1v5 a :KpiDefinition ;
-   :kpiIdValue "CY1.5" ;
-   :kpiReadableIdValue "appl_code_test" ;
-   :kpiDescriptionValue "Percentage of applications compliant with secure coding and testing : [%]" ;
-   :kpiExpectedUnit "percent" ;
-   :tisaxDomain "System acquisitions, requirement management and development" .
-
-# --- 7.6 Supplier Relationships KPIs ---
-
-:KpiCy1v6 a :KpiDefinition ;
-   :kpiIdValue "CY1.6" ;
-   :kpiReadableIdValue "supp_secu_comp" ;
-   :kpiDescriptionValue "Percentage of suppliers compliant with security requirements: [%]" ;
-   :kpiExpectedUnit "percent" ;
-   :tisaxDomain "Supplier Relationships" .
-
-# --- 7.7 Incident Response KPIs ---
-
-:KpiCy1v12 a :KpiDefinition ;
-   :kpiIdValue "CY1.12" ;
-   :kpiReadableIdValue "inci_resp_trai" ;
-   :kpiDescriptionValue "Frequency of incident response plan testing and staff training: [n times/year]" ;
-   :kpiExpectedUnit "number" ;
-   :tisaxDomain "Incident Response" .
-
-# --- 7.8 Organization of Information Security KPIs ---
-
-:KpiCy1v13 a :KpiDefinition ;
-   :kpiIdValue "CY1.13" ;
-   :kpiReadableIdValue "asse_inve_cove" ;
-   :kpiDescriptionValue "Percentage of IT assets included in the inventory: [%]" ;
-   :kpiExpectedUnit "percent" ;
-   :tisaxDomain "Organization of Information Security" .
-
-# --- 7.9 Physical Security KPIs ---
 
 :KpiCy1v17 a :KpiDefinition ;
-   :kpiIdValue "CY1.17" ;
-   :kpiReadableIdValue "phys_cent_cont" ;
    :kpiDescriptionValue "Percentage of data centers and server rooms compliant with physical security controls: [%]" ;
    :kpiExpectedUnit "percent" ;
+   :kpiIdValue "CY1.17" ;
+   :kpiReadableIdValue "phys_cent_cont" ;
    :tisaxDomain "Physical Security" .
 
-# --- 7.10 Placeholder KPIs (CY1.24 and CY1.25) ---
-# TODO: Add official requirements and descriptions for CY1.24 and CY1.25
-
-:KpiCy1v24 a :KpiDefinition ;
-   :kpiIdValue "CY1.24" ;
-   :kpiReadableIdValue "it_patc_days" ;
-   :kpiDescriptionValue "Number of days until all critical services in the IT environment are fully patched against known critical vulnerabilities: [n]" ;
-   :kpiExpectedUnit "days" ;
-   :tisaxDomain "TODO: Add TISAX domain" .
-
-:KpiCy1v25 a :KpiDefinition ;
-   :kpiIdValue "CY1.25" ;
-   :kpiReadableIdValue "ot_patc_days" ;
-   :kpiDescriptionValue "Number of days until all critical services in the OT environment are fully patched against known critical vulnerabilities: [n]" ;
-   :kpiExpectedUnit "days" ;
-   :tisaxDomain "TODO: Add TISAX domain" .
-
-# --- 7.11 KPI Definition Entity and Helper Properties ---
+:KpiCy1v20 a :KpiDefinition ;
+   :kpiDescriptionValue "Percentage of user accounts compliant with identification, authentication, authorization, and account management requirements: [%]" ;
+   :kpiExpectedUnit "percent" ;
+   :kpiIdValue "CY1.20" ;
+   :kpiReadableIdValue "user_auth_acco" ;
+   :tisaxDomain "Identity and Access Management" .
 
 :KpiDefinition a samm:Entity ;
    samm:preferredName "KPI Definition"@en ;
    samm:description "Entity representing the official definition of a cyber security KPI based on TISAX requirements. Includes KPI identification, TISAX domain classification, comprehensive description, and measurement specifications."@en ;
-   samm:properties ( 
-      :kpiIdValue 
-      :kpiReadableIdValue 
-      :kpiDescriptionValue 
-      :kpiExpectedUnit 
-      [ samm:property :tisaxDomain; samm:optional true ]
-   ) .
+   samm:properties ( :kpiIdValue :kpiReadableIdValue :kpiDescriptionValue :kpiExpectedUnit [ samm:property :tisaxDomain; samm:optional true ] ) .
+
+:kpiExpectedUnit a samm:Property ;
+   samm:preferredName "KPI Expected Unit"@en ;
+   samm:description "The expected unit of measurement (percent, number, or days)"@en ;
+   samm:characteristic samm-c:Text .
+
+:BpnaType a samm-c:Trait ;
+   samm:preferredName "BPNA Type"@en ;
+   samm:description "Trait for Business Partner Number Address format validation."@en ;
+   samm-c:baseCharacteristic samm-c:Text ;
+   samm-c:constraint :BpnaConstraint .
+
+:KpiCy1v18 a :KpiDefinition ;
+   :kpiDescriptionValue "Percentage of user accounts and access rights compliant with RBAC policies: [%]" ;
+   :kpiExpectedUnit "percent" ;
+   :kpiIdValue "CY1.18" ;
+   :kpiReadableIdValue "acce_rbac_comp" ;
+   :tisaxDomain "Identity and Access Management" .
+
+:KpiCy1v2 a :KpiDefinition ;
+   :kpiDescriptionValue "Percentage of information transmissions using approved cryptographic mechanisms: [%]" ;
+   :kpiExpectedUnit "percent" ;
+   :kpiIdValue "CY1.2" ;
+   :kpiReadableIdValue "cryp_tran_mech" ;
+   :tisaxDomain "Cryptography" .
+
+:kpiDescriptionValue a samm:Property ;
+   samm:preferredName "KPI Description Value"@en ;
+   samm:description "The official short description text as it appears in reports"@en ;
+   samm:characteristic samm-c:Text .
+
+:KpiCy1v21 a :KpiDefinition ;
+   :kpiDescriptionValue "Percentage of systems compliant with wireless, portable device, session lock, and remote session termination requirements: [%]" ;
+   :kpiExpectedUnit "percent" ;
+   :kpiIdValue "CY1.21" ;
+   :kpiReadableIdValue "wirl_port_sess" ;
+   :tisaxDomain "IT Security / Cyber Security" .
 
 :kpiIdValue a samm:Property ;
    samm:preferredName "KPI ID Value"@en ;
@@ -667,17 +479,64 @@
    samm:description "The human-readable identifier value in snake_case format"@en ;
    samm:characteristic samm-c:Text .
 
-:kpiDescriptionValue a samm:Property ;
-   samm:preferredName "KPI Description Value"@en ;
-   samm:description "The official short description text as it appears in reports"@en ;
-   samm:characteristic samm-c:Text .
+:KpiCy1v9 a :KpiDefinition ;
+   :kpiDescriptionValue "Percentage of strictly confidential or higher data encrypted at rest: [%]" ;
+   :kpiExpectedUnit "percent" ;
+   :kpiIdValue "CY1.9" ;
+   :kpiReadableIdValue "data_encr_rest" ;
+   :tisaxDomain "Cryptography" .
 
-:kpiExpectedUnit a samm:Property ;
-   samm:preferredName "KPI Expected Unit"@en ;
-   samm:description "The expected unit of measurement (percent, number, or days)"@en ;
-   samm:characteristic samm-c:Text .
+:KpiCy1v1 a :KpiDefinition ;
+   :kpiDescriptionValue "Percentage of network segments compliant with defined security postures and access requirements: [%]" ;
+   :kpiExpectedUnit "percent" ;
+   :kpiIdValue "CY1.1" ;
+   :kpiReadableIdValue "netw_segm_comp" ;
+   :tisaxDomain "Operations Security" .
+
+:KpiCy1v19 a :KpiDefinition ;
+   :kpiDescriptionValue "Percentage of critical systems with logging enabled and logs regularly reviewed: [%]" ;
+   :kpiExpectedUnit "percent" ;
+   :kpiIdValue "CY1.19" ;
+   :kpiReadableIdValue "logg_enab_revi" ;
+   :tisaxDomain "Operations Security" .
+
+:KpiCy1v22 a :KpiDefinition ;
+   :kpiDescriptionValue "Percentage of critical systems with reliable, automated backups and tested recovery procedures: [%]" ;
+   :kpiExpectedUnit "percent" ;
+   :kpiIdValue "CY1.22" ;
+   :kpiReadableIdValue "back_auto_reco" ;
+   :tisaxDomain "Operations Security" .
+
+:KpiCy1v10 a :KpiDefinition ;
+   :kpiDescriptionValue "Percentage of remote access connections from untrusted networks using MFA and VPN: [%]" ;
+   :kpiExpectedUnit "percent" ;
+   :kpiIdValue "CY1.10" ;
+   :kpiReadableIdValue "remo_vpn_mfa" ;
+   :tisaxDomain "Identity and Access Management" .
 
 :tisaxDomain a samm:Property ;
    samm:preferredName "TISAX Domain"@en ;
    samm:description "The TISAX security domain this KPI belongs to (e.g., Operations Security, Cryptography, Identity and Access Management). Optional field for documentation and categorization purposes."@en ;
    samm:characteristic samm-c:Text .
+
+:KpiCy1v8 a :KpiDefinition ;
+   :kpiDescriptionValue "Frequency of cloud security audits: [n times/year]" ;
+   :kpiExpectedUnit "number" ;
+   :kpiIdValue "CY1.8" ;
+   :kpiReadableIdValue "clou_audi_freq" ;
+   :tisaxDomain "IT Security / Cyber Security" .
+
+:KpiCy1v23 a :KpiDefinition ;
+   :kpiDescriptionValue "Percentage of systems compliant with recommended configurations, least functionality, and included in component inventory: [%]" ;
+   :kpiExpectedUnit "percent" ;
+   :kpiIdValue "CY1.23" ;
+   :kpiReadableIdValue "conf_leas_inve" ;
+   :tisaxDomain "Operations Security" .
+
+:KpiCy1v11 a :KpiDefinition ;
+   :kpiDescriptionValue "Percentage of systems using approved cryptographic algorithms and key management practices: [%]" ;
+   :kpiExpectedUnit "percent" ;
+   :kpiIdValue "CY1.11" ;
+   :kpiReadableIdValue "cryp_algo_key" ;
+   :tisaxDomain "Cryptography" .
+
