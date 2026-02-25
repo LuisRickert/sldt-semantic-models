@@ -450,7 +450,7 @@ _   samm:properties ( :header :content ) ;
 
 # --- 7.1 Operations Security KPIs ---
 
-:KpiCy1_1 a :KpiDefinition ;
+:KpiCy1v1 a :KpiDefinition ;
    samm:preferredName "Network Segmentation Compliance"@en ;
    samm:description "Implement network segmentation based on risk, function, and access requirements. Define security postures, permitted information types, and security attributes for each zone. This KPI measures the percentage of network segments that comply with defined security postures and access requirements, ensuring proper isolation and controlled communication between network zones."@en ;
    :kpiIdValue "CY1.1" ;
@@ -459,7 +459,7 @@ _   samm:properties ( :header :content ) ;
    :kpiExpectedUnit "percent" ;
    :tisaxDomain "Operations Security" .
 
-:KpiCy1_2 a :KpiDefinition ;
+:KpiCy1v2 a :KpiDefinition ;
    samm:preferredName "Cryptographic Transmission Mechanisms"@en ;
    samm:description "Protect information confidentiality and integrity in transit using cryptographic mechanisms. This KPI measures the percentage of information transmissions that use approved cryptographic mechanisms such as TLS, ensuring data protection during network communication."@en ;
    :kpiIdValue "CY1.2" ;
@@ -468,7 +468,7 @@ _   samm:properties ( :header :content ) ;
    :kpiExpectedUnit "percent" ;
    :tisaxDomain "Cryptography" .
 
-:KpiCy1_3 a :KpiDefinition ;
+:KpiCy1v3 a :KpiDefinition ;
    samm:preferredName "IDS/IPS Network Monitoring"@en ;
    samm:description "Implement network-based and/or host-based intrusion detection/prevention systems (IDS/IPS) to monitor and prevent unauthorized exfiltration, exploitation, or modification of information. Monitor and control communications at network boundaries. This KPI measures the percentage of network segments monitored by IDS/IPS and/or the percentage of endpoints with IDS/IPS protection."@en ;
    :kpiIdValue "CY1.3" ;
@@ -477,7 +477,7 @@ _   samm:properties ( :header :content ) ;
    :kpiExpectedUnit "percent" ;
    :tisaxDomain "Operations Security" .
 
-:KpiCy1_4 a :KpiDefinition ;
+:KpiCy1v4 a :KpiDefinition ;
    samm:preferredName "Network Zoning Architecture Review Frequency"@en ;
    samm:description "Review and update the network zoning architecture and configuration periodically or when changes occur. This KPI measures how frequently the network zoning architecture is reviewed to ensure it remains aligned with security requirements and business needs."@en ;
    :kpiIdValue "CY1.4" ;
@@ -486,7 +486,7 @@ _   samm:properties ( :header :content ) ;
    :kpiExpectedUnit "number" ;
    :tisaxDomain "Operations Security" .
 
-:KpiCy1_15 a :KpiDefinition ;
+:KpiCy1v15 a :KpiDefinition ;
    samm:preferredName "System Security Controls Compliance"@en ;
    samm:description "Implement patch management, malware protection, and vulnerability management processes. This KPI measures the percentage of systems compliant with patch management, malware protection, and vulnerability remediation requirements, ensuring comprehensive system security hygiene."@en ;
    :kpiIdValue "CY1.15" ;
@@ -495,7 +495,7 @@ _   samm:properties ( :header :content ) ;
    :kpiExpectedUnit "percent" ;
    :tisaxDomain "Operations Security" .
 
-:KpiCy1_16 a :KpiDefinition ;
+:KpiCy1v16 a :KpiDefinition ;
    samm:preferredName "Confidential Data Access Logging"@en ;
    samm:description "Log access to highly confidential data. This KPI measures the percentage of highly confidential data access events that are logged, enabling security monitoring, incident investigation, and compliance with data protection regulations."@en ;
    :kpiIdValue "CY1.16" ;
@@ -504,7 +504,7 @@ _   samm:properties ( :header :content ) ;
    :kpiExpectedUnit "percent" ;
    :tisaxDomain "Operations Security" .
 
-:KpiCy1_19 a :KpiDefinition ;
+:KpiCy1v19 a :KpiDefinition ;
    samm:preferredName "Critical System Logging and Review"@en ;
    samm:description "Enable logging on critical systems, securely store logs, and review logs for suspicious activities. Keep log data at least 6 months. This KPI measures the percentage of critical systems with logging enabled and logs regularly reviewed for security events."@en ;
    :kpiIdValue "CY1.19" ;
@@ -513,7 +513,7 @@ _   samm:properties ( :header :content ) ;
    :kpiExpectedUnit "percent" ;
    :tisaxDomain "Operations Security" .
 
-:KpiCy1_22 a :KpiDefinition ;
+:KpiCy1v22 a :KpiDefinition ;
    samm:preferredName "Backup and Recovery Capability"@en ;
    samm:description "Support backups without affecting operations, verify backup reliability, automate backups, and recover to a known secure state after disruptions. This KPI measures the percentage of critical systems with reliable, automated backups and tested recovery procedures."@en ;
    :kpiIdValue "CY1.22" ;
@@ -522,7 +522,7 @@ _   samm:properties ( :header :content ) ;
    :kpiExpectedUnit "percent" ;
    :tisaxDomain "Operations Security" .
 
-:KpiCy1_23 a :KpiDefinition ;
+:KpiCy1v23 a :KpiDefinition ;
    samm:preferredName "System Configuration Compliance"@en ;
    samm:description "Configure systems according to recommended settings, prohibit unnecessary functions and ports, and maintain a component inventory. This KPI measures the percentage of systems compliant with recommended configurations, least functionality principle, and included in component inventory."@en ;
    :kpiIdValue "CY1.23" ;
@@ -531,7 +531,7 @@ _   samm:properties ( :header :content ) ;
    :kpiExpectedUnit "percent" ;
    :tisaxDomain "Operations Security" .
 
-:KpiCy1_14 a :KpiDefinition ;
+:KpiCy1v14 a :KpiDefinition ;
    samm:preferredName "Business Recovery Testing"@en ;
    samm:description "Establish IT emergency management, business continuity planning, and recovery objectives. Test recovery procedures regularly. This KPI measures the percentage of critical business processes with tested recovery procedures to ensure business continuity capability."@en ;
    :kpiIdValue "CY1.14" ;
@@ -542,7 +542,7 @@ _   samm:properties ( :header :content ) ;
 
 # --- 7.2 Cryptography KPIs ---
 
-:KpiCy1_9 a :KpiDefinition ;
+:KpiCy1v9 a :KpiDefinition ;
    samm:preferredName "Data Encryption at Rest"@en ;
    samm:description "Encrypt data classified as strictly confidential or higher at rest. This KPI measures the percentage of strictly confidential or higher classified data that is encrypted at rest, protecting sensitive information from unauthorized access."@en ;
    :kpiIdValue "CY1.9" ;
@@ -562,7 +562,7 @@ _   samm:properties ( :header :content ) ;
 
 # --- 7.3 Identity and Access Management KPIs ---
 
-:KpiCy1_10 a :KpiDefinition ;
+:KpiCy1v10 a :KpiDefinition ;
    samm:preferredName "Remote Access MFA and VPN"@en ;
    samm:description "Require multi-factor authentication and VPN encryption for remote access from untrusted networks. This KPI measures the percentage of remote access connections from untrusted networks that use both MFA and VPN, ensuring secure remote connectivity."@en ;
    :kpiIdValue "CY1.10" ;
@@ -571,7 +571,7 @@ _   samm:properties ( :header :content ) ;
    :kpiExpectedUnit "percent" ;
    :tisaxDomain "Identity and Access Management" .
 
-:KpiCy1_18 a :KpiDefinition ;
+:KpiCy1v18 a :KpiDefinition ;
    samm:preferredName "RBAC Compliance"@en ;
    samm:description "Manage accounts, limit and monitor administrative privileges, implement role-based access control (RBAC), and log unauthorized access attempts. This KPI measures the percentage of user accounts and access rights compliant with RBAC policies."@en ;
    :kpiIdValue "CY1.18" ;
@@ -580,7 +580,7 @@ _   samm:properties ( :header :content ) ;
    :kpiExpectedUnit "percent" ;
    :tisaxDomain "Identity and Access Management" .
 
-:KpiCy1_20 a :KpiDefinition ;
+:KpiCy1v20 a :KpiDefinition ;
    samm:preferredName "User Account Management Compliance"@en ;
    samm:description "Implement unique identification, authentication, and authorization for all human users, including multi-factor authentication for untrusted networks. Support account management and role-based permissions mapping. This KPI measures the percentage of user accounts compliant with identification, authentication, authorization, and account management requirements."@en ;
    :kpiIdValue "CY1.20" ;
@@ -591,7 +591,7 @@ _   samm:properties ( :header :content ) ;
 
 # --- 7.4 IT Security / Cyber Security KPIs ---
 
-:KpiCy1_7 a :KpiDefinition ;
+:KpiCy1v7 a :KpiDefinition ;
    samm:preferredName "Cloud Tenant Separation"@en ;
    samm:description "Separate BMW data and applications from other tenants. This KPI measures the percentage of cloud environments with proper BMW tenant separation to ensure data isolation and security in multi-tenant cloud environments."@en ;
    :kpiIdValue "CY1.7" ;
@@ -600,7 +600,7 @@ _   samm:properties ( :header :content ) ;
    :kpiExpectedUnit "percent" ;
    :tisaxDomain "IT Security / Cyber Security" .
 
-:KpiCy1_8 a :KpiDefinition ;
+:KpiCy1v8 a :KpiDefinition ;
    samm:preferredName "Cloud Security Audit Frequency"@en ;
    samm:description "Monitor cloud assets and events. Conduct regular audits to review security controls. This KPI measures the frequency of cloud security audits performed to ensure ongoing compliance and security of cloud environments."@en ;
    :kpiIdValue "CY1.8" ;
@@ -609,7 +609,7 @@ _   samm:properties ( :header :content ) ;
    :kpiExpectedUnit "number" ;
    :tisaxDomain "IT Security / Cyber Security" .
 
-:KpiCy1_21 a :KpiDefinition ;
+:KpiCy1v21 a :KpiDefinition ;
    samm:preferredName "Endpoint and Session Security"@en ;
    samm:description "Control and monitor wireless connectivity, enforce usage restrictions for portable and mobile devices, implement session locks, and terminate remote sessions after inactivity. This KPI measures the percentage of systems compliant with wireless, portable device, session lock, and remote session termination requirements."@en ;
    :kpiIdValue "CY1.21" ;
@@ -620,7 +620,7 @@ _   samm:properties ( :header :content ) ;
 
 # --- 7.5 System Acquisitions, Requirement Management and Development KPIs ---
 
-:KpiCy1_5 a :KpiDefinition ;
+:KpiCy1v5 a :KpiDefinition ;
    samm:preferredName "Secure Coding and Testing Compliance"@en ;
    samm:description "Adhere to secure coding practices, conduct security testing (DAST/IAST/SAST) and regular Pentests for apps with highest protection level. This KPI measures the percentage of applications compliant with secure coding and testing requirements."@en ;
    :kpiIdValue "CY1.5" ;
@@ -631,7 +631,7 @@ _   samm:properties ( :header :content ) ;
 
 # --- 7.6 Supplier Relationships KPIs ---
 
-:KpiCy1_6 a :KpiDefinition ;
+:KpiCy1v6 a :KpiDefinition ;
    samm:preferredName "Supplier Security Compliance"@en ;
    samm:description "Validate vendor secure development practices, security controls, and contractual requirements. Monitor supplier compliance. This KPI measures the percentage of suppliers compliant with security requirements."@en ;
    :kpiIdValue "CY1.6" ;
@@ -642,7 +642,7 @@ _   samm:properties ( :header :content ) ;
 
 # --- 7.7 Incident Response KPIs ---
 
-:KpiCy1_12 a :KpiDefinition ;
+:KpiCy1v12 a :KpiDefinition ;
    samm:preferredName "Incident Response Testing and Training"@en ;
    samm:description "Implement an incident response process, team, reporting procedures, classification, communication plan, analysis, post-incident reviews, and 24/7 SOC/MDR with measurable KPIs. This KPI measures the frequency of incident response plan testing and staff training."@en ;
    :kpiIdValue "CY1.12" ;
@@ -653,7 +653,7 @@ _   samm:properties ( :header :content ) ;
 
 # --- 7.8 Organization of Information Security KPIs ---
 
-:KpiCy1_13 a :KpiDefinition ;
+:KpiCy1v13 a :KpiDefinition ;
    samm:preferredName "IT Asset Inventory Coverage"@en ;
    samm:description "Perform regular risk assessments, define security roles and responsibilities, maintain an IT asset inventory. This KPI measures the percentage of IT assets included in the inventory."@en ;
    :kpiIdValue "CY1.13" ;
@@ -664,7 +664,7 @@ _   samm:properties ( :header :content ) ;
 
 # --- 7.9 Physical Security KPIs ---
 
-:KpiCy1_17 a :KpiDefinition ;
+:KpiCy1v17 a :KpiDefinition ;
    samm:preferredName "Physical Security Controls Compliance"@en ;
    samm:description "Implement physical security controls for data centers and server rooms. Enforce secure hardware disposal procedures. This KPI measures the percentage of data centers and server rooms compliant with physical security controls."@en ;
    :kpiIdValue "CY1.17" ;
@@ -676,7 +676,7 @@ _   samm:properties ( :header :content ) ;
 # --- 7.10 Placeholder KPIs (CY1.24 and CY1.25) ---
 # TODO: Add official requirements and descriptions for CY1.24 and CY1.25
 
-:KpiCy1_24 a :KpiDefinition ;
+:KpiCy1v24 a :KpiDefinition ;
    samm:preferredName "IT Critical Vulnerability Patching Time"@en ;
    samm:description "TODO: Add official description from BMW Cyber Security Metrics Framework"@en ;
    :kpiIdValue "CY1.24" ;
@@ -685,7 +685,7 @@ _   samm:properties ( :header :content ) ;
    :kpiExpectedUnit "days" ;
    :tisaxDomain "TODO: Add TISAX domain" .
 
-:KpiCy1_25 a :KpiDefinition ;
+:KpiCy1v25 a :KpiDefinition ;
    samm:preferredName "OT Critical Vulnerability Patching Time"@en ;
    samm:description "TODO: Add official description from BMW Cyber Security Metrics Framework"@en ;
    :kpiIdValue "CY1.25" ;
