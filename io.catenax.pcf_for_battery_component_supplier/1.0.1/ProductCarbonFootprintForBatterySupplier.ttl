@@ -14,7 +14,7 @@
 @prefix samm-u: <urn:samm:org.eclipse.esmf.samm:unit:2.1.0#> .
 
 :ProductCarbonFootprintForBatterySupplier a samm:Aspect ;
-   samm:properties ( :cxPCFValues ext-pcf:secondaryEmissionFactorSources [ samm:property ext-pcf:primaryDataShare; samm:optional true ] :customerPartID :technologicalRepresentativeness :geographicalRepresentativeness :timerelatedRepresentativeness :dataQualityRating :manufacturerPartId :validityPeriod :siteBpn :legalBpn :productQualityParameter :contentC02Metals ) ;
+   samm:properties ( :cxPCFValues [ samm:property ext-pcf:secondaryEmissionFactorSources; samm:optional true ] [ samm:property ext-pcf:primaryDataShare; samm:optional true ] :customerPartID :technologicalRepresentativeness :geographicalRepresentativeness :timerelatedRepresentativeness :dataQualityRating [ samm:property :manufacturerPartId; samm:optional true ] :validityPeriod :siteBpn :legalBpn [ samm:property :productQualityParameter; samm:optional true ] [ samm:property :contentC02Metals; samm:optional true ] ) ;
    samm:operations ( ) ;
    samm:events ( ) .
 
