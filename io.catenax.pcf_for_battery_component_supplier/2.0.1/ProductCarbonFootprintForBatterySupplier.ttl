@@ -24,7 +24,7 @@
    samm:characteristic :CharacteristicPCFValues .
 
 :customerPartID a samm:Property ;
-   samm:preferredName "Manufacturer Part Id"@en ;
+   samm:preferredName "Customer Part ID"@en ;
    samm:description "This is PartNumber assigend by the consumer"@en ;
    samm:characteristic ext-serial-part:PartIdCharacteristic .
 
