@@ -146,7 +146,7 @@
 :declaredUnit a samm:Property ;
    samm:preferredName "Declared Unit"@en ;
    samm:description "This attribute defines the unit of the attribute absPCFValue. It is one of C02KG/kg OR C02KG/piece\""@en ;
-   samm:characteristic :CharacteristicDeclaredUnit .
+   samm:characteristic samm-c:Text .
 
 :absPcfValue a samm:Property ;
    samm:preferredName "absPCF"@en ;
@@ -154,10 +154,6 @@
 
 :CharacteristicStage a samm:Characteristic ;
    samm:dataType :EntityStageValue .
-
-:CharacteristicDeclaredUnit a samm-c:Enumeration ;
-   samm:dataType xsd:string ;
-   samm-c:values ( "C02KG/KG" "C02KG/piece" ) .
 
 :EntityStageValue a samm:Entity ;
    samm:properties ( :stageValue ) .
